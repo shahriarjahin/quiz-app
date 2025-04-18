@@ -17,7 +17,7 @@
   .timer {
     font-size: 18px;
     font-weight: 600;
-    color: var(--accent-color);
+    color: white;
     display: flex;
     align-items: center;
   }
@@ -55,7 +55,7 @@
     align-items: center;
     padding: 16px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(196, 192, 255, 0.158);
     border: 1px solid var(--glass-border);
     transition: all 0.3s ease;
     cursor: pointer;
@@ -67,9 +67,9 @@
   }
   
   .option.selected {
-    background: linear-gradient(45deg, rgba(108, 99, 255, 0.2), rgba(77, 182, 172, 0.2));
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.2), rgba(77, 182, 172, 0.2));
     border-color: var(--primary-color);
-    box-shadow: 0 0 15px rgba(108, 99, 255, 0.3);
+    box-shadow: 0 0 15px rgba(25, 255, 29, 0.3);
   }
   
   .option-letter {
@@ -78,7 +78,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(45deg, var(--glass-border), var(--accent-color));
     border-radius: 50%;
     font-weight: 600;
     margin-right: 16px;

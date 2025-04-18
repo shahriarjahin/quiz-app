@@ -5,9 +5,9 @@
   --glass-bg: rgba(255, 255, 255, 0.1);
   --glass-border: rgba(255, 255, 255, 0.2);
   --glass-shadow: rgba(0, 0, 0, 0.1);
-  --primary-color: #6c63ff;
+  --primary-color: #0d00ff;
   --secondary-color: #4db6ac;
-  --accent-color: #ff7597;
+  --accent-color: #428eea;
   --text-light: #ffffff;
   --text-dark: #333333;
   --error-color: #ff5252;
@@ -21,7 +21,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  background: linear-gradient(135deg, #25697a, #2a6bec);
   background-attachment: fixed;
   min-height: 100vh;
   color: var(--text-light);
