@@ -1,0 +1,74 @@
+/* src/components/Layout.css */
+.layout-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .app-header {
+    padding: 5px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.285);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .header-logo {
+    height: 100px;
+    max-width: 100%;
+    object-fit: contain;
+    outline: white;
+    position: left;
+    margin: 0 auto;
+    padding: 0 0px;
+  }
+  .event-logo {
+    height: 100px;
+    max-width: 100%;
+    object-fit: contain;
+    outline: white;
+    position: left;
+    margin: 0 auto;
+    padding: 0 0px;
+  }
+  
+  .app-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .app-footer {
+    padding: 6px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--glass-border);
+  }
+  
+  .powered-by {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .sponsor-logo {
+    height: 40px;
+    object-fit: contain;
+  }
+  
+  @media (max-width: 768px) {
+    .event-logo {
+      height: 40px;
+    }
+    
+    .sponsor-logo {
+      height: 20px;
+    }
+  }
