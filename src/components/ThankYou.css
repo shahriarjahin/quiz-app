@@ -58,9 +58,9 @@
   }
   
   .result-value {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 600;
-    color: var(--accent-color);
+    color: black;
   }
   
   .final-message {
