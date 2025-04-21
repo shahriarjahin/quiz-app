@@ -1,7 +1,9 @@
 // components/Registration.js
 import React, { useState } from 'react';
 import './Registration.css';
+import { supabase } from '../supabaseClient'; 
 
+// Adjust the import path as necessary
 function Registration({ onSubmit }) {
   const [formData, setFormData] = useState({
     name: '',
