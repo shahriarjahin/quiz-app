@@ -50,10 +50,31 @@ function App() {
   }, [timerRunning]);
 
   // Handle user registration
-  const handleRegistration = (data) => {
-    setUserData(data);
-    setCurrentScreen('quiz');
-    setTimerRunning(true);
+  const handleRegistration = async (data) => {
+    try {
+      // Check for duplicate phone number in the database
+      const { data: existingUser, error } = await supabase
+        .from('quiz_submissions')
+        .select('*')
+        .eq('phone', data.phone)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error; // Handle unexpected errors
+      }
+
+      if (existingUser) {
+        alert('This phone number is already registered.');
+        return; // Stop further execution
+      }
+
+      // If no duplicate, proceed with registration
+      setUserData(data);
+      setCurrentScreen('quiz');
+      setTimerRunning(true);
+    } catch (error) {
+      console.error('Error during registration:', error);
+    }
   };
 
   // Handle answer selection
@@ -90,7 +111,7 @@ function App() {
       if (error) throw error;
 
       setQuizResult({
-        score: correctAnswers,
+        answers: answers,
         total: quizData.length,
         timeTaken: timeElapsed
       });

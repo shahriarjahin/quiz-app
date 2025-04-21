@@ -32,8 +32,8 @@ function ThankYou({ result, userData }) {
             </div>
             
             <div className="result-item">
-              <span className="result-label">Questions:</span>
-              <span className="result-value">{result.total}</span>
+              <span className="result-label">Total Answered:</span>
+              <span className="result-value">{Object.keys(result.answers).length}</span>
             </div>
           </div>
         )}
