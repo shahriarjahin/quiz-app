@@ -66,11 +66,14 @@ function Registration({ onSubmit }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
-      onSubmit(formData);
+      const isValidUser = await validateUser(formData.phone);
+      if (isValidUser) {
+        onSubmit(formData);
+      }
     }
   };
 
