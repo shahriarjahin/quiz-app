@@ -42,11 +42,15 @@ function Registration({ onSubmit }) {
 
   const validateUser = async (phone) => {
     try {
+      console.log('Validating phone:', phone); // Debugging
+
       const { data: existingUser, error } = await supabase
         .from('users')
         .select('*')
         .eq('phone', phone) // Use phone column
         .single();
+
+      console.log('Query result:', existingUser); // Debugging
 
       if (error && error.code === 'PGRST116') {
         alert('Registration not found. Please check your phone number.');
