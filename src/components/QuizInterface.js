@@ -60,7 +60,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
         .from('quiz_submissions')
         .insert([
           {
-            phone: userData.phone, // Ensure userData is passed as a prop
+            phone: userData.phone, // Updated to match the column name in the database
             answers: answers,
             time_taken: timeElapsed,
             score: correctAnswers,
