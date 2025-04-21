@@ -5,7 +5,7 @@ import './Registration.css';
 function Registration({ onSubmit }) {
   const [formData, setFormData] = useState({
     name: '',
-    phone: '',
+    phone_number: '',
     university: ''
   });
   const [errors, setErrors] = useState({});
@@ -37,6 +37,32 @@ function Registration({ onSubmit }) {
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const validateUser = async (phone) => {
+    try {
+      const { data: existingUser, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('phone', phone)
+        .single();
+
+      if (error && error.code === 'PGRST116') {
+        alert('Registration not found. Please check your phone number.');
+        return false;
+      }
+
+      if (error) {
+        console.error('Error validating user:', error);
+        throw error;
+      }
+
+      return true; // User exists
+    } catch (error) {
+      console.error('Unexpected error during user validation:', error);
+      alert('An unexpected error occurred. Please try again.');
+      return false;
+    }
   };
 
   const handleSubmit = (e) => {
