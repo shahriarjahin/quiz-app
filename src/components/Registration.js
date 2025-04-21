@@ -46,7 +46,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
       const { data: existingSubmission, error: submissionError } = await supabase
         .from('quiz_submissions')
         .select('*')
-        .eq('phone_number', data.phone)
+        .eq('phone_number', data.phone) // Corrected column name
         .single();
 
       if (submissionError && submissionError.code !== 'PGRST116') {
@@ -63,7 +63,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
       const { data: existingUser, error: userError } = await supabase
         .from('users')
         .select('*')
-        .eq('phone_number', data.phone)
+        .eq('phone_number', data.phone) // Corrected column name
         .single();
 
       if (userError && userError.code === 'PGRST116') {
@@ -71,7 +71,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
         return false;
       }
 
-      if (userError && userError.code !== 'PGRST116') {
+      if (userError) {
         console.error('Error checking users table:', userError);
         throw userError; // Handle unexpected errors
       }
