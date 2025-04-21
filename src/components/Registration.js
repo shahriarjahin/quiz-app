@@ -42,6 +42,22 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
 
   const handleRegistration = async (data) => {
     try {
+      // Check for duplicate phone number in the quiz_submissions table
+      const { data: existingSubmission, error: submissionError } = await supabase
+        .from('quiz_submissions')
+        .select('*')
+        .eq('phone_number', data.phone)
+        .single();
+
+      if (submissionError && submissionError.code !== 'PGRST116') {
+        throw submissionError; // Handle unexpected errors
+      }
+
+      if (existingSubmission) {
+        setErrors({ phone: 'You have already participated.' });
+        return; // Stop further execution
+      }
+
       // Check if the phone number exists in the users table
       const { data: existingUser, error: userError } = await supabase
         .from('users')
@@ -58,39 +74,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
         throw userError; // Handle unexpected errors
       }
 
-      // Check for duplicate phone number in the quiz_submissions table
-      const { data: existingSubmission, error: submissionError } = await supabase
-        .from('quiz_submissions')
-        .select('*')
-        .eq('phone_number', data.phone)
-        .single();
-
-      if (submissionError) {
-        console.error('Error checking quiz submissions:', submissionError);
-      }
-
-      if (submissionError && submissionError.code !== 'PGRST116') {
-        throw submissionError; // Handle unexpected errors
-      }
-
-      if (existingSubmission) {
-        setErrors({ phone: 'You have already participated.' });
-        return; // Stop further execution
-      }
-
-      // If no duplicate, proceed with registration
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert([
-          {
-            phone_number: data.phone,
-            name: data.name,
-            university: data.university
-          }
-        ]);
-
-      if (insertError) throw insertError;
-
+      // If no duplicate and user exists, proceed to the quiz
       setUserData(data);
       setCurrentScreen('quiz');
       setTimerRunning(true);
