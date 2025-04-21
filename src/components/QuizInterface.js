@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './QuizInterface.css';
 import { supabase } from '../utils/supabase';
 
-function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit }) {
+function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit, userData }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   
   // Format time (seconds to MM:SS)
@@ -50,11 +50,9 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
   };
 
   const handleSubmit = async () => {
-    setTimerRunning(false);
-
     try {
       // Calculate results
-      const correctAnswers = quizData.filter(q => q.correct_answer === answers[q.id]).length;
+      const correctAnswers = questions.filter(q => q.correct_answer === answers[q.id]).length;
       const totalAnswered = Object.keys(answers).length;
 
       // Store submission in Supabase
@@ -62,7 +60,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
         .from('quiz_submissions')
         .insert([
           {
-            phone: userData.phone,
+            phone: userData.phone, // Ensure userData is passed as a prop
             answers: answers,
             time_taken: timeElapsed,
             score: correctAnswers,
@@ -73,13 +71,11 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
 
       if (error) throw error;
 
-      setQuizResult({
+      onSubmit({
         answers: answers,
-        total: quizData.length,
+        total: questions.length,
         timeTaken: timeElapsed
       });
-
-      setCurrentScreen('thankYou');
     } catch (error) {
       console.error('Error submitting quiz:', error);
     }
