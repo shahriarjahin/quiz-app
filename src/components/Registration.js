@@ -39,11 +39,33 @@ function Registration({ onSubmit }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
-      onSubmit(formData);
+      try {
+        // Check if the phone number exists in the users table
+        const { data: existingUser, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('phone_number', formData.phone)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          throw error;
+        }
+
+        if (!existingUser) {
+          alert('Registration not found.');
+          return;
+        }
+
+        // Proceed to the question section if the user exists
+        onSubmit(formData);
+      } catch (error) {
+        console.error('Error validating registration:', error);
+        alert('An error occurred while validating your registration. Please try again.');
+      }
     }
   };
 
