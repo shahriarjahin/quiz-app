@@ -71,7 +71,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
         return false;
       }
 
-      if (userError) {
+      if (userError && userError.code !== 'PGRST116') {
         console.error('Error checking users table:', userError);
         throw userError; // Handle unexpected errors
       }
