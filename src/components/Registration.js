@@ -1,9 +1,8 @@
 // components/Registration.js
 import React, { useState } from 'react';
 import './Registration.css';
-import { supabase } from '../utils/supabase';
 
-function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning }) {
+function Registration({ onSubmit }) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -40,52 +39,11 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleRegistration = async (data) => {
-    try {
-      // Step 1: Check if the phone number exists in the users table
-      const { data: existingUser, error: userError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('phone_number', data.phone) // Corrected column name
-        .single();
-
-      if (userError && userError.code === 'PGRST116') {
-        alert('Registration not found. Please check your phone number.');
-        return false;
-      }
-
-      if (userError) {
-        console.error('Error checking users table:', userError);
-        throw userError; // Handle unexpected errors
-      }
-
-      // Step 2: If user exists, proceed to the quiz
-      if (existingUser) {
-        setUserData(data); // Set user data
-        setCurrentScreen('quiz'); // Navigate to quiz interface
-        setTimerRunning(true); // Start the timer
-        return true;
-      }
-    } catch (error) {
-      console.error('Error during registration:', error);
-      alert('An unexpected error occurred. Please try again.');
-      return false;
-    }
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
+    
     if (validateForm()) {
-      try {
-        const isRegistered = await handleRegistration(formData);
-        if (isRegistered) {
-          onSubmit(formData);
-        }
-      } catch (error) {
-        console.error('Error validating registration:', error);
-        alert('An error occurred while validating your registration. Please try again.');
-      }
+      onSubmit(formData);
     }
   };
 
