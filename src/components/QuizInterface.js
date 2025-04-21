@@ -1,26 +1,10 @@
 // components/QuizInterface.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './QuizInterface.css';
 
 function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(180); 
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeRemaining((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(timer);
-          onSubmit(); // Automatically submit the quiz
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer); // Cleanup on component unmount
-  }, [onSubmit]);
-
+  
   // Format time (seconds to MM:SS)
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -69,7 +53,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
       <div className="glass-panel">
         <div className="quiz-header">
           <div className="timer">
-            Time Remaining: {formatTime(timeRemaining)}
+            Time: {formatTime(timeElapsed)}
           </div>
           <div className="progress">
             Question {currentQuestionIndex + 1} of {questions.length}
