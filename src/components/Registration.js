@@ -55,7 +55,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
 
       if (existingSubmission) {
         setErrors({ phone: 'You have already participated.' });
-        return; // Stop further execution
+        return false; // Stop further execution
       }
 
       // Check if the phone number exists in the users table
@@ -67,7 +67,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
 
       if (userError && userError.code === 'PGRST116') {
         alert('Registration not found. Please check your phone number.');
-        return;
+        return false;
       }
 
       if (userError) {
@@ -78,8 +78,10 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
       setUserData(data);
       setCurrentScreen('quiz');
       setTimerRunning(true);
+      return true;
     } catch (error) {
       console.error('Error during registration:', error);
+      return false;
     }
   };
 
@@ -88,8 +90,10 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
 
     if (validateForm()) {
       try {
-        await handleRegistration(formData);
-        onSubmit(formData);
+        const isRegistered = await handleRegistration(formData);
+        if (isRegistered) {
+          onSubmit(formData);
+        }
       } catch (error) {
         console.error('Error validating registration:', error);
         alert('An error occurred while validating your registration. Please try again.');
