@@ -42,19 +42,35 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
 
   const handleRegistration = async (data) => {
     try {
-      // Check for duplicate phone number in the database
-      const { data: existingUser, error } = await supabase
+      // Check if the phone number exists in the users table
+      const { data: existingUser, error: userError } = await supabase
         .from('users')
         .select('*')
         .eq('phone_number', data.phone)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
-        throw error; // Handle unexpected errors
+      if (userError && userError.code === 'PGRST116') {
+        alert('Registration not found. Please check your phone number.');
+        return;
       }
 
-      if (existingUser) {
-        alert('This phone number is already registered.');
+      if (userError) {
+        throw userError; // Handle unexpected errors
+      }
+
+      // Check for duplicate phone number in the quiz_submissions table
+      const { data: existingSubmission, error: submissionError } = await supabase
+        .from('quiz_submissions')
+        .select('*')
+        .eq('phone', data.phone)
+        .single();
+
+      if (submissionError && submissionError.code !== 'PGRST116') {
+        throw submissionError; // Handle unexpected errors
+      }
+
+      if (existingSubmission) {
+        alert('You have already participated.');
         return; // Stop further execution
       }
 
