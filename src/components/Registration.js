@@ -40,28 +40,51 @@ function Registration({ onSubmit }) {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleRegistration = async (data) => {
+    try {
+      // Check for duplicate phone number in the database
+      const { data: existingUser, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('phone_number', data.phone)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error; // Handle unexpected errors
+      }
+
+      if (existingUser) {
+        alert('This phone number is already registered.');
+        return; // Stop further execution
+      }
+
+      // If no duplicate, proceed with registration
+      const { error: insertError } = await supabase
+        .from('users')
+        .insert([
+          {
+            phone_number: data.phone,
+            name: data.name,
+            university: data.university
+          }
+        ]);
+
+      if (insertError) throw insertError;
+
+      setUserData(data);
+      setCurrentScreen('quiz');
+      setTimerRunning(true);
+    } catch (error) {
+      console.error('Error during registration:', error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validateForm()) {
       try {
-        // Check if the phone number exists in the users table
-        const { data: existingUser, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('phone_number', formData.phone)
-          .single();
-
-        if (error && error.code !== 'PGRST116') {
-          throw error;
-        }
-
-        if (!existingUser) {
-          alert('Registration not found.');
-          return;
-        }
-
-        // Proceed to the question section if the user exists
+        await handleRegistration(formData);
         onSubmit(formData);
       } catch (error) {
         console.error('Error validating registration:', error);

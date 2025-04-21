@@ -48,6 +48,42 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
     return questions.every(q => answers[q.id]);
   };
 
+  const handleSubmit = async () => {
+    setTimerRunning(false);
+
+    try {
+      // Calculate results
+      const correctAnswers = quizData.filter(q => q.correct_answer === answers[q.id]).length;
+      const totalAnswered = Object.keys(answers).length;
+
+      // Store submission in Supabase
+      const { error } = await supabase
+        .from('quiz_submissions')
+        .insert([
+          {
+            phone: userData.phone,
+            answers: answers,
+            time_taken: timeElapsed,
+            score: correctAnswers,
+            total_questions_answered: totalAnswered,
+            submitted_at: new Date().toISOString()
+          }
+        ]);
+
+      if (error) throw error;
+
+      setQuizResult({
+        answers: answers,
+        total: quizData.length,
+        timeTaken: timeElapsed
+      });
+
+      setCurrentScreen('thankYou');
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
+    }
+  };
+
   return (
     <div className="quiz-container">
       <div className="glass-panel">
@@ -114,7 +150,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
         <div className="submit-quiz-middle">
             <button 
               className="submit-button" 
-              onClick={onSubmit}
+              onClick={handleSubmit}
             >
               Submit Quiz
             </button>
