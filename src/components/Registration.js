@@ -54,7 +54,8 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
       }
 
       if (existingSubmission) {
-        setErrors({ phone: 'You have already participated.' });
+        alert('Registration not found. Please check your phone number.');
+        //setErrors({ phone: 'You have already participated.' });
         return; // Stop further execution
       }
 
