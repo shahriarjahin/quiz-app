@@ -74,8 +74,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
       }
 
       if (existingSubmission) {
-        console.log('Duplicate submission found:', existingSubmission);
-        alert('You have already participated.');
+        setErrors({ phone: 'You have already participated.' });
         return; // Stop further execution
       }
 
