@@ -62,7 +62,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
       const { data: existingSubmission, error: submissionError } = await supabase
         .from('quiz_submissions')
         .select('*')
-        .eq('phone', data.phone)
+        .eq('phone_number', data.phone)
         .single();
 
       if (submissionError) {
