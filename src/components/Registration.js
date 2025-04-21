@@ -77,10 +77,12 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
       }
 
       // Step 3: If no duplicate and user exists, proceed to the quiz
-      setUserData(data);
-      setCurrentScreen('quiz');
-      setTimerRunning(true);
-      return true;
+      if (existingUser) {
+        setUserData(data); // Set user data
+        setCurrentScreen('quiz'); // Navigate to quiz interface
+        setTimerRunning(true); // Start the timer
+        return true;
+      }
     } catch (error) {
       console.error('Error during registration:', error);
       alert('An unexpected error occurred. Please try again.');
