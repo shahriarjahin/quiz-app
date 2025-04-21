@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './Registration.css';
 import { supabase } from '../utils/supabase';
 
-function Registration({ onSubmit }) {
+function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning }) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
