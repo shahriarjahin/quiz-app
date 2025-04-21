@@ -65,6 +65,10 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
         .eq('phone', data.phone)
         .single();
 
+      if (submissionError) {
+        console.error('Error checking quiz submissions:', submissionError);
+      }
+
       if (submissionError && submissionError.code !== 'PGRST116') {
         throw submissionError; // Handle unexpected errors
       }
