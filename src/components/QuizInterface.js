@@ -99,25 +99,26 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
         </div>
         
         <div className="question-navigation">
-        {questions.map((q, index) => (
-          <React.Fragment key={index}>
+          {questions.map((q, index) => (
             <div 
+              key={index}
               className={`question-dot ${index === currentQuestionIndex ? 'active' : ''} ${answers[q.id] ? 'answered' : ''}`}
               onClick={() => setCurrentQuestionIndex(index)}
             >
               {index + 1}
             </div>
-            <div className="submit-quiz-middle">
-              <button 
-                className="submit-button" 
-                onClick={onSubmit}
-              >
-                Submit Quiz
-              </button>
-            </div>
-          </React.Fragment>
-        ))}
+            
+            
+          ))}
         </div>
+        <div className="submit-quiz-middle">
+            <button 
+              className="submit-button" 
+              onClick={onSubmit}
+            >
+              Submit Quiz
+            </button>
+          </div>
       </div>
     </div>
   );
