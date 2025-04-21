@@ -1,6 +1,7 @@
 // components/Registration.js
 import React, { useState } from 'react';
 import './Registration.css';
+import { checkUserRegistration } from '../utils/supabase';
 
 function Registration({ onSubmit }) {
   const [formData, setFormData] = useState({
@@ -39,11 +40,17 @@ function Registration({ onSubmit }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
-      onSubmit(formData);
+      const isRegistered = await checkUserRegistration(formData.phone);
+
+      if (isRegistered) {
+        onSubmit(formData);
+      } else {
+        alert('Registration not found.');
+      }
     }
   };
 
