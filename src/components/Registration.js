@@ -6,7 +6,7 @@ import { supabase } from '../utils/supabase'; // Corrected import path
 function Registration({ onSubmit }) {
   const [formData, setFormData] = useState({
     name: '',
-    phone_number: '',
+    phone: '', // Changed from phone_number to phone
     university: ''
   });
   const [errors, setErrors] = useState({});
@@ -45,7 +45,7 @@ function Registration({ onSubmit }) {
       const { data: existingUser, error } = await supabase
         .from('users')
         .select('*')
-        .eq('phone', phone)
+        .eq('phone', phone) // Use phone column
         .single();
 
       if (error && error.code === 'PGRST116') {
@@ -98,7 +98,7 @@ function Registration({ onSubmit }) {
             <input
               type="tel"
               id="phone"
-              name="phone"
+              name="phone" // Changed from phone_number to phone
               value={formData.phone}
               onChange={handleChange}
               placeholder="Enter your phone number"
