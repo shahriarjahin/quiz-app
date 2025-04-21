@@ -86,6 +86,8 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
             Previous
           </button>
           
+          
+          
           {currentQuestionIndex < questions.length - 1 ? (
             <button 
               className="nav-button" 
@@ -93,15 +95,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
             >
               Next
             </button>
-          ) : (
-            <button 
-              className="submit-button" 
-              onClick={onSubmit}
-              disabled={!areAllQuestionsAnswered()}
-            >
-              Submit Quiz
-            </button>
-          )}
+          ) : null}
         </div>
         
         <div className="question-navigation">
@@ -113,6 +107,15 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
             >
               {index + 1}
             </div>
+           <div className="submit-quiz-middle">
+           <button 
+             className="submit-button" 
+             onClick={onSubmit}
+           >
+             Submit Quiz
+           </button>
+         </div> 
+            
           ))}
         </div>
       </div>
