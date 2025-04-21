@@ -42,7 +42,7 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
 
   const handleRegistration = async (data) => {
     try {
-      // Check for duplicate phone number in the quiz_submissions table
+      // Step 1: Check for duplicate phone number in the quiz_submissions table
       const { data: existingSubmission, error: submissionError } = await supabase
         .from('quiz_submissions')
         .select('*')
@@ -50,15 +50,16 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
         .single();
 
       if (submissionError && submissionError.code !== 'PGRST116') {
+        console.error('Error checking quiz submissions:', submissionError);
         throw submissionError; // Handle unexpected errors
       }
 
       if (existingSubmission) {
-        setErrors({ phone: 'You have already participated.' });
+        alert('You have already participated.');
         return false; // Stop further execution
       }
 
-      // Check if the phone number exists in the users table
+      // Step 2: Check if the phone number exists in the users table
       const { data: existingUser, error: userError } = await supabase
         .from('users')
         .select('*')
@@ -71,16 +72,18 @@ function Registration({ onSubmit, setUserData, setCurrentScreen, setTimerRunning
       }
 
       if (userError) {
+        console.error('Error checking users table:', userError);
         throw userError; // Handle unexpected errors
       }
 
-      // If no duplicate and user exists, proceed to the quiz
+      // Step 3: If no duplicate and user exists, proceed to the quiz
       setUserData(data);
       setCurrentScreen('quiz');
       setTimerRunning(true);
       return true;
     } catch (error) {
       console.error('Error during registration:', error);
+      alert('An unexpected error occurred. Please try again.');
       return false;
     }
   };
