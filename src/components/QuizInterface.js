@@ -43,9 +43,20 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
     onAnswerSelect(currentQuestion.id, option);
   };
 
+  // Calculate total questions answered
+  const totalQuestionsAnswered = Object.keys(answers).length;
+
   // Allow submission regardless of how many questions are answered
   const canSubmitQuiz = () => {
-    return Object.keys(answers).length > 0; // At least one question must be answered
+    return totalQuestionsAnswered > 0; // At least one question must be answered
+  };
+
+  const handleSubmit = () => {
+    onSubmit({
+      total_questions_answered: totalQuestionsAnswered, // Submit total questions answered
+      timeElapsed,
+      answers,
+    });
   };
 
   return (
@@ -86,19 +97,20 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
             Previous
           </button>
 
-          {currentQuestionIndex < questions.length - 1 ? (
+          {currentQuestionIndex < questions.length - 1 && (
             <button
               className="nav-button"
               onClick={goToNextQuestion}
             >
               Next
             </button>
-          ) : (
+          )}
+
+          {canSubmitQuiz() && (
             <div className="submit-container">
               <button
                 className="submit-button"
-                onClick={onSubmit}
-                disabled={!canSubmitQuiz()} // Allow submission if at least one question is answered
+                onClick={handleSubmit}
               >
                 Submit Quiz
               </button>

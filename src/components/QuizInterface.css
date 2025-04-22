@@ -176,10 +176,11 @@
   }
 
 .submit-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px; /* Adjust spacing as needed */
+  position: fixed; /* Fix the position relative to the viewport */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for the button's size */
+  z-index: 1000; /* Ensure it appears above other elements */
 }
 
 .submit-button {
