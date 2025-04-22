@@ -1,12 +1,20 @@
 // components/QuizInterface.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './QuizInterface.css';
 import { supabase } from '../utils/supabase'; // Import Supabase client
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit, userData }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [loading, setLoading] = useState(true); // Add loading state
   const navigate = useNavigate(); // Initialize navigation
+
+  useEffect(() => {
+    // Simulate loading delay or fetch questions if needed
+    if (questions && questions.length > 0) {
+      setLoading(false); // Set loading to false when questions are available
+    }
+  }, [questions]);
 
   // Format time (seconds to MM:SS)
   const formatTime = (timeInSeconds) => {
@@ -15,8 +23,8 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // Check if we have questions to display
-  if (!questions || questions.length === 0) {
+  // Show loading screen if questions are not yet loaded
+  if (loading || !questions || questions.length === 0) {
     return (
       <div className="quiz-container">
         <div className="glass-panel">
