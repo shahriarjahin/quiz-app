@@ -2,10 +2,12 @@
 import React, { useState } from 'react';
 import './QuizInterface.css';
 import { supabase } from '../utils/supabase';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit, userData }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  
+  const navigate = useNavigate(); // Initialize navigate
+
   // Format time (seconds to MM:SS)
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -25,14 +27,14 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
   }
 
   const currentQuestion = questions[currentQuestionIndex];
-  
+
   // Handle navigation
   const goToNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
-  
+
   const goToPreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
@@ -60,7 +62,9 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
         .from('quiz_submissions')
         .insert([
           {
-            phone: userData.phone, // Updated to match the column name in the database
+            name: userData.name,
+            university: userData.university,
+            phone: userData.phone, // Ensure phone matches the database column
             answers: answers,
             time_taken: timeElapsed,
             score: correctAnswers,
@@ -71,13 +75,18 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
 
       if (error) throw error;
 
+      // Call onSubmit callback
       onSubmit({
         answers: answers,
         total: questions.length,
         timeTaken: timeElapsed
       });
+
+      // Navigate to ThankYou page
+      navigate('/thankyou'); // Replace '/thankyou' with the actual route for ThankYou.js
     } catch (error) {
       console.error('Error submitting quiz:', error);
+      alert('Failed to submit quiz. Please try again.');
     }
   };
 
@@ -92,13 +101,13 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
             Question {currentQuestionIndex + 1} of {questions.length}
           </div>
         </div>
-        
+
         <div className="question-section">
           <h3 className="question-text">{currentQuestion.question}</h3>
-          
+
           <div className="options-container">
             {currentQuestion.options.map((option, index) => (
-              <div 
+              <div
                 key={index}
                 className={`option ${answers[currentQuestion.id] === option ? 'selected' : ''}`}
                 onClick={() => handleOptionSelect(option)}
@@ -109,49 +118,46 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
             ))}
           </div>
         </div>
-        
+
         <div className="navigation-controls">
-          <button 
-            className="nav-button" 
-            onClick={goToPreviousQuestion} 
+          <button
+            className="nav-button"
+            onClick={goToPreviousQuestion}
             disabled={currentQuestionIndex === 0}
           >
             Previous
           </button>
-          
-          
-          
+
           {currentQuestionIndex < questions.length - 1 ? (
-            <button 
-              className="nav-button" 
+            <button
+              className="nav-button"
               onClick={goToNextQuestion}
             >
               Next
             </button>
           ) : null}
         </div>
-        
+
         <div className="question-navigation">
           {questions.map((q, index) => (
-            <div 
+            <div
               key={index}
               className={`question-dot ${index === currentQuestionIndex ? 'active' : ''} ${answers[q.id] ? 'answered' : ''}`}
               onClick={() => setCurrentQuestionIndex(index)}
             >
               {index + 1}
             </div>
-            
-            
           ))}
         </div>
+
         <div className="submit-quiz-middle">
-            <button 
-              className="submit-button" 
-              onClick={handleSubmit}
-            >
-              Submit Quiz
-            </button>
-          </div>
+          <button
+            className="submit-button"
+            onClick={handleSubmit}
+          >
+            Submit Quiz
+          </button>
+        </div>
       </div>
     </div>
   );
