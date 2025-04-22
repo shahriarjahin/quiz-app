@@ -6,15 +6,9 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate for naviga
 
 function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit, userData }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [loading, setLoading] = useState(true); // Add loading state
   const navigate = useNavigate(); // Initialize navigation
 
-  useEffect(() => {
-    // Simulate loading delay or fetch questions if needed
-    if (questions && questions.length > 0) {
-      setLoading(false); // Set loading to false when questions are available
-    }
-  }, [questions]);
+  
 
   // Format time (seconds to MM:SS)
   const formatTime = (timeInSeconds) => {
@@ -24,7 +18,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
   };
 
   // Show loading screen if questions are not yet loaded
-  if (loading || !questions || questions.length === 0) {
+  if (!questions || questions.length === 0) {
     return (
       <div className="quiz-container">
         <div className="glass-panel">
