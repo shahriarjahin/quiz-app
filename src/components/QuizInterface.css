@@ -92,20 +92,26 @@
   
   .navigation-controls {
     display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
-    margin-bottom: 30px;
+    justify-content: space-between; /* Distribute buttons evenly */
+    align-items: center; /* Align buttons vertically */
+    margin-top: 20px; /* Add spacing above the controls */
   }
   
-  .nav-button {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-  
+  .nav-button,
   .submit-button {
-    background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
-    padding: 14px 32px;
-    font-weight: 600;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .nav-button:disabled,
+  .submit-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
   }
   
   .question-navigation {
@@ -161,39 +167,14 @@
     margin-top: 20px;
   }
   
-  .submit-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+  .submit-container {
+    position: fixed; /* Fix the position relative to the viewport */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for the button's size */
+    z-index: 1000; /* Ensure it appears above other elements */
   }
   
   .submit-button:hover {
     background-color: #45a049;
   }
-
-.submit-container {
-  position: fixed; /* Fix the position relative to the viewport */
-  top: 50%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%); /* Adjust for the button's size */
-  z-index: 1000; /* Ensure it appears above other elements */
-}
-
-.submit-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.submit-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}

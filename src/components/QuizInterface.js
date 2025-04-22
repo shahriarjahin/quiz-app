@@ -1,9 +1,12 @@
 // components/QuizInterface.js
 import React, { useState } from 'react';
 import './QuizInterface.css';
+import { supabase } from '../utils/supabase'; // Import Supabase client
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
-function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit }) {
+function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit, userData }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const navigate = useNavigate(); // Initialize navigation
 
   // Format time (seconds to MM:SS)
   const formatTime = (timeInSeconds) => {
@@ -51,12 +54,43 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
     return totalQuestionsAnswered > 0; // At least one question must be answered
   };
 
-  const handleSubmit = () => {
-    onSubmit({
-      total_questions_answered: totalQuestionsAnswered, // Submit total questions answered
-      timeElapsed,
-      answers,
-    });
+  const handleSubmit = async () => {
+    try {
+      // Calculate the score
+      const correctAnswers = questions.filter(
+        (q) => q.correct_answer === answers[q.id]
+      ).length;
+
+      // Prepare data for submission
+      const submissionData = {
+        phone: userData.phone,
+        name: userData.name,
+        university: userData.university,
+        answers: JSON.stringify(answers), // Convert answers to JSON string
+        time_taken: timeElapsed,
+        score: correctAnswers,
+        total_questions_answered: totalQuestionsAnswered,
+        total_questions: questions.length,
+        submitted_at: new Date().toISOString(),
+      };
+
+      // Insert data into the database
+      const { error } = await supabase
+        .from('quiz_submissions')
+        .insert([submissionData]);
+
+      if (error) {
+        console.error('Error inserting data:', error);
+        alert('Failed to submit quiz. Please try again.');
+        return;
+      }
+
+      // Redirect to the Thank You page
+      navigate('/thankyou');
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      alert('An unexpected error occurred. Please try again.');
+    }
   };
 
   return (
@@ -107,14 +141,12 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
           )}
 
           {canSubmitQuiz() && (
-            <div className="submit-container">
-              <button
-                className="submit-button"
-                onClick={handleSubmit}
-              >
-                Submit Quiz
-              </button>
-            </div>
+            <button
+              className="submit-button"
+              onClick={handleSubmit}
+            >
+              Submit Quiz
+            </button>
           )}
         </div>
 
