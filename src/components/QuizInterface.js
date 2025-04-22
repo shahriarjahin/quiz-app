@@ -1,6 +1,7 @@
 // components/QuizInterface.js
 import React, { useState } from 'react';
 import './QuizInterface.css';
+import { supabase } from '../utils/supabaseClient'; // Import Supabase client
 
 function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -14,6 +15,27 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
 
   const getTotalAnsweredQuestions = () => {
     return Object.keys(answers).filter((key) => answers[key]).length;
+  };
+
+  const handleSubmit = async () => {
+    const totalAnswered = getTotalAnsweredQuestions();
+
+    try {
+      const { data, error } = await supabase
+        .from('quiz_submissions') // Replace with your table name
+        .insert([
+          { total_answered: totalAnswered, submitted_at: new Date().toISOString() }
+        ]);
+
+      if (error) {
+        console.error('Error saving submission:', error);
+      } else {
+        console.log('Submission saved:', data);
+        onSubmit(totalAnswered); // Call the parent onSubmit function
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    }
   };
 
   // Check if we have questions to display
@@ -92,7 +114,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
 
           <button 
             className="submit-button" 
-            onClick={() => onSubmit(getTotalAnsweredQuestions())}
+            onClick={handleSubmit} // Use the new handleSubmit function
             disabled={getTotalAnsweredQuestions() === 0}
           >
             Submit Quiz
