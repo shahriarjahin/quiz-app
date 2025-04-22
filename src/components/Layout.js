@@ -20,8 +20,6 @@ function Layout({ children }) {
       <footer className="app-footer">
         <div className="powered-by">
           Powered by 
-          <img src={eventLogo} alt="Event Logo" className="sponsor-logo" />
-          <img src={organizerLogo} alt="Event Logo" className="sponsor-logo" />
           <img src={sponsorLogo} alt="Sponsor Logo" className="sponsor-logo" />
           
         </div>
