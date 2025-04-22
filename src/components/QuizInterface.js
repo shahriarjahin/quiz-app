@@ -165,3 +165,35 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
 }
 
 export default QuizInterface;
+
+// components/ParentComponent.js
+import React, { useState, useEffect } from 'react';
+import QuizInterface from './QuizInterface';
+
+function ParentComponent() {
+  const [questions, setQuestions] = useState([]);
+
+  useEffect(() => {
+    // Fetch questions from an API or database
+    async function fetchQuestions() {
+      const response = await fetch('/api/questions'); // Replace with your API endpoint
+      const data = await response.json();
+      setQuestions(data);
+    }
+
+    fetchQuestions();
+  }, []);
+
+  return (
+    <QuizInterface
+      questions={questions}
+      onAnswerSelect={(id, answer) => console.log(id, answer)}
+      answers={{}}
+      timeElapsed={0}
+      onSubmit={(data) => console.log('Quiz submitted:', data)}
+      userData={{ name: 'John Doe', university: 'XYZ University', phone: '1234567890' }}
+    />
+  );
+}
+
+export default ParentComponent;
