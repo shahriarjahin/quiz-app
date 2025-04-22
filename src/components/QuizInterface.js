@@ -12,6 +12,10 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const getTotalAnsweredQuestions = () => {
+    return Object.keys(answers).filter((key) => answers[key]).length;
+  };
+
   // Check if we have questions to display
   if (!questions || questions.length === 0) {
     return (
@@ -85,21 +89,21 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
           >
             Previous
           </button>
-          
-          {currentQuestionIndex < questions.length - 1 ? (
+
+          <button 
+            className="submit-button" 
+            onClick={() => onSubmit(getTotalAnsweredQuestions())}
+            disabled={getTotalAnsweredQuestions() === 0}
+          >
+            Submit Quiz
+          </button>
+
+          {currentQuestionIndex < questions.length - 1 && (
             <button 
               className="nav-button" 
               onClick={goToNextQuestion}
             >
               Next
-            </button>
-          ) : (
-            <button 
-              className="submit-button" 
-              onClick={onSubmit}
-              disabled={!areAllQuestionsAnswered()}
-            >
-              Submit Quiz
             </button>
           )}
         </div>
