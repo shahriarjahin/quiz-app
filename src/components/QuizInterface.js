@@ -1,12 +1,9 @@
 // components/QuizInterface.js
 import React, { useState } from 'react';
 import './QuizInterface.css';
-import { supabase } from '../utils/supabase'; // Import Supabase client
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
-function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit, userData }) {
+function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const navigate = useNavigate(); // Initialize navigate
 
   // Format time (seconds to MM:SS)
   const formatTime = (timeInSeconds) => {
@@ -46,49 +43,9 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
     onAnswerSelect(currentQuestion.id, option);
   };
 
-  // Check if all questions are answered
-  const areAllQuestionsAnswered = () => {
-    return questions.every(q => answers[q.id]);
-  };
-
-  // Define the handleSubmit function
-  const handleSubmit = async () => {
-    try {
-      // Calculate results
-      const correctAnswers = questions.filter(q => q.correct_answer === answers[q.id]).length;
-      const totalAnswered = Object.keys(answers).length;
-
-      // Insert submission into Supabase
-      const { error } = await supabase
-        .from('quiz_submissions')
-        .insert([
-          {
-            name: userData.name,
-            university: userData.university,
-            phone: userData.phone, // Ensure phone matches the database column
-            answers: answers,
-            time_taken: timeElapsed,
-            score: correctAnswers,
-            total_questions_answered: totalAnswered,
-            submitted_at: new Date().toISOString()
-          }
-        ]);
-
-      if (error) throw error;
-
-      // Call onSubmit callback
-      onSubmit({
-        answers: answers,
-        total: questions.length,
-        timeTaken: timeElapsed
-      });
-
-      // Navigate to ThankYou page
-      navigate('/thankyou'); // Replace '/thankyou' with the actual route for ThankYou.js
-    } catch (error) {
-      console.error('Error submitting quiz:', error);
-      alert('Failed to submit quiz. Please try again.');
-    }
+  // Allow submission regardless of how many questions are answered
+  const canSubmitQuiz = () => {
+    return Object.keys(answers).length > 0; // At least one question must be answered
   };
 
   return (
@@ -136,7 +93,17 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
             >
               Next
             </button>
-          ) : null}
+          ) : (
+            <div className="submit-container">
+              <button
+                className="submit-button"
+                onClick={onSubmit}
+                disabled={!canSubmitQuiz()} // Allow submission if at least one question is answered
+              >
+                Submit Quiz
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="question-navigation">
@@ -149,15 +116,6 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
               {index + 1}
             </div>
           ))}
-        </div>
-
-        <div className="submit-quiz-middle">
-          <button
-            className="submit-button"
-            onClick={handleSubmit}
-          >
-            Submit Quiz
-          </button>
         </div>
       </div>
     </div>
