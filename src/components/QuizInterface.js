@@ -1,7 +1,7 @@
 // components/QuizInterface.js
 import React, { useState } from 'react';
 import './QuizInterface.css';
-import { supabase } from '../utils/supabaseClient'; // Import Supabase client
+import { supabase } from '../utils/supabase'; // Import Supabase client
 
 function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
