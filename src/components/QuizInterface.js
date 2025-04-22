@@ -1,15 +1,10 @@
 // components/QuizInterface.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './QuizInterface.css';
-import { supabase } from '../utils/supabase'; // Import Supabase client
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
-function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit, userData }) {
+function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const navigate = useNavigate(); // Initialize navigation
-
   
-
   // Format time (seconds to MM:SS)
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -17,7 +12,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // Show loading screen if questions are not yet loaded
+  // Check if we have questions to display
   if (!questions || questions.length === 0) {
     return (
       <div className="quiz-container">
@@ -29,14 +24,14 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
   }
 
   const currentQuestion = questions[currentQuestionIndex];
-
+  
   // Handle navigation
   const goToNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
-
+  
   const goToPreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
@@ -48,51 +43,9 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
     onAnswerSelect(currentQuestion.id, option);
   };
 
-  // Calculate total questions answered
-  const totalQuestionsAnswered = Object.keys(answers).length;
-
-  // Allow submission regardless of how many questions are answered
-  const canSubmitQuiz = () => {
-    return totalQuestionsAnswered > 0; // At least one question must be answered
-  };
-
-  const handleSubmit = async () => {
-    try {
-      // Calculate the score
-      const correctAnswers = questions.filter(
-        (q) => q.correct_answer === answers[q.id]
-      ).length;
-
-      // Prepare data for submission
-      const submissionData = {
-        phone: userData.phone,
-        name: userData.name,
-        university: userData.university,
-        answers: JSON.stringify(answers), // Convert answers to JSON string
-        time_taken: timeElapsed,
-        score: correctAnswers,
-        total_questions_answered: totalQuestionsAnswered,
-        total_questions: questions.length,
-        submitted_at: new Date().toISOString(),
-      };
-
-      // Insert data into the database
-      const { error } = await supabase
-        .from('quiz_submissions')
-        .insert([submissionData]);
-
-      if (error) {
-        console.error('Error inserting data:', error);
-        alert('Failed to submit quiz. Please try again.');
-        return;
-      }
-
-      // Redirect to the Thank You page
-      navigate('/thankyou');
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      alert('An unexpected error occurred. Please try again.');
-    }
+  // Check if all questions are answered
+  const areAllQuestionsAnswered = () => {
+    return questions.every(q => answers[q.id]);
   };
 
   return (
@@ -106,13 +59,13 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
             Question {currentQuestionIndex + 1} of {questions.length}
           </div>
         </div>
-
+        
         <div className="question-section">
           <h3 className="question-text">{currentQuestion.question}</h3>
-
+          
           <div className="options-container">
             {currentQuestion.options.map((option, index) => (
-              <div
+              <div 
                 key={index}
                 className={`option ${answers[currentQuestion.id] === option ? 'selected' : ''}`}
                 onClick={() => handleOptionSelect(option)}
@@ -123,38 +76,37 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
             ))}
           </div>
         </div>
-
+        
         <div className="navigation-controls">
-          <button
-            className="nav-button"
-            onClick={goToPreviousQuestion}
+          <button 
+            className="nav-button" 
+            onClick={goToPreviousQuestion} 
             disabled={currentQuestionIndex === 0}
           >
             Previous
           </button>
-
-          {currentQuestionIndex < questions.length - 1 && (
-            <button
-              className="nav-button"
+          
+          {currentQuestionIndex < questions.length - 1 ? (
+            <button 
+              className="nav-button" 
               onClick={goToNextQuestion}
             >
               Next
             </button>
-          )}
-
-          {canSubmitQuiz() && (
-            <button
-              className="submit-button"
-              onClick={handleSubmit}
+          ) : (
+            <button 
+              className="submit-button" 
+              onClick={onSubmit}
+              disabled={!areAllQuestionsAnswered()}
             >
               Submit Quiz
             </button>
           )}
         </div>
-
+        
         <div className="question-navigation">
           {questions.map((q, index) => (
-            <div
+            <div 
               key={index}
               className={`question-dot ${index === currentQuestionIndex ? 'active' : ''} ${answers[q.id] ? 'answered' : ''}`}
               onClick={() => setCurrentQuestionIndex(index)}
