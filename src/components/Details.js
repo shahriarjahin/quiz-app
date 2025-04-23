@@ -34,11 +34,8 @@ function Registration({ onSubmit, email }) {
   }, []);
 
   useEffect(() => {
-    console.log('Email Prop:', email);
-    console.log('CSV Data:', csvData);
     if (email && csvData.length > 0) {
       const user = csvData.find((user) => user.email === email);
-      console.log('Matched User:', user);
       if (user) {
         setFormData({
           name: user.name || '',
@@ -91,21 +88,25 @@ function Registration({ onSubmit, email }) {
     <div className="registration-container">
       <div className="glass-panel">
         <h2>Confirm Your Details</h2>
-        <div className="form-group">
-          <label>Quiz Status:</label>
-          <p>{quizStatus || 'Loading...'}</p>
+        <div className="form-group-row">
+          <div className="form-group">
+            <label>Phone Number:</label>
+            <p>+880{formData.phone || 'N/A'}</p>
+          </div>
+          <div className="form-group">
+            <label>Quiz Status:</label>
+            <p>{quizStatus || 'Loading...'}</p>
+          </div>
         </div>
-        <div className="form-group">
-          <label>Score:</label>
-          <p>{quizScore || 'N/A'}</p>
-        </div>
-        <div className="form-group">
-          <label>Phone Number:</label>
-          <p>+880{formData.phone || 'N/A'}</p>
-        </div>
-        <div className="form-group">
-          <label>Full Name:</label>
-          <p>{formData.name || 'N/A'}</p>
+        <div className="form-group-row">
+          <div className="form-group">
+            <label>Full Name:</label>
+            <p>{formData.name || 'N/A'}</p>
+          </div>
+          <div className="form-group">
+            <label>Score:</label>
+            <p>{quizScore || 'N/A'}</p>
+          </div>
         </div>
         <div className="form-group">
           <label>Email:</label>
