@@ -5,15 +5,16 @@
     min-height: 100vh;
   }
   
+  /* Header styles */
   .app-header {
-    padding: 5px 0;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.205);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--glass-border);
+    padding: 10px 20px;
+    background-color: #f5f5f5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+  
   .header-logo {
     height: 100px;
     max-width: 100%;
@@ -23,14 +24,32 @@
     margin: 0 auto;
     padding: 0 0px;
   }
+  
   .event-logo {
-    height: 100px;
+    height: 50px;
     max-width: 100%;
     object-fit: contain;
     outline: white;
     position: left;
     margin: 0 auto;
     padding: 0 0px;
+  }
+  
+  /* Toggle button styles */
+  .toggle-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+  }
+  
+  .toggle-button img {
+    width: 30px; /* Adjust the size of the icon */
+    height: 30px;
+  }
+  
+  .toggle-button:hover img {
+    opacity: 0.8; /* Add a hover effect */
   }
   
   .app-content {
@@ -40,14 +59,12 @@
     padding: 20px;
   }
   
+  /* Footer styles */
   .app-footer {
-    padding: 6px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.418);
-    backdrop-filter: blur(8px);
-    border-top: 1px solid var(--glass-border);
+    text-align: center;
+    padding: 10px;
+    background-color: #f5f5f5;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
   }
   
   .powered-by {
@@ -59,8 +76,9 @@
   }
   
   .sponsor-logo {
-    height: 40px;
+    height: 20px;
     object-fit: contain;
+    margin-left: 5px;
   }
   
   @media (max-width: 768px) {

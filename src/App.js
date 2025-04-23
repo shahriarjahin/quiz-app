@@ -5,6 +5,7 @@ import Details from './components/Details';
 import QuizInterface from './components/QuizInterface';
 import ThankYou from './components/ThankYou';
 import Login from './components/login';
+import AdminPanel from './components/AdminPanel';
 import { supabase, fetchQuestionsFromGoogleSheet } from './utils/supabase';
 import './App.css';
 
@@ -150,6 +151,8 @@ function App() {
         );
       case 'thankYou':
         return <ThankYou result={quizResult} userData={userData} />;
+      case 'admin':
+        return <AdminPanel />;
       default:
         return <Login />;
     }
