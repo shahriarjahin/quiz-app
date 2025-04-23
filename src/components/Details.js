@@ -1,7 +1,7 @@
 // components/Registration.js
 import React, { useState, useEffect } from 'react';
 import './Details.css';
-import { checkUserRegistration, GOOGLE_SHEETS_CSV_URL } from '../utils/supabase';
+import { checkUserRegistration, GOOGLE_SHEETS_Users_CSV_URL } from '../utils/supabase';
 import Papa from 'papaparse';
 
 function Registration({ onSubmit, email }) {
@@ -17,7 +17,7 @@ function Registration({ onSubmit, email }) {
 
   useEffect(() => {
     // Fetch and parse the CSV data from the Google Sheets link
-    fetch(GOOGLE_SHEETS_CSV_URL)
+    fetch(GOOGLE_SHEETS_Users_CSV_URL)
       .then((response) => response.text())
       .then((text) => {
         Papa.parse(text, {
@@ -84,7 +84,7 @@ function Registration({ onSubmit, email }) {
         <h2>Confirm Your Details</h2>
         <div className="form-group">
           <label>Phone Number:</label>
-          <p>{formData.phone || 'N/A'}</p>
+          <p>+880{ formData.phone || 'N/A'}</p>
         </div>
         <div className="form-group">
           <label>Full Name:</label>

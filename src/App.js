@@ -5,9 +5,10 @@ import Details from './components/Details';
 import QuizInterface from './components/QuizInterface';
 import ThankYou from './components/ThankYou';
 import Login from './components/login';
-import { supabase } from './utils/supabase';
+import { supabase, fetchQuestionsFromGoogleSheet } from './utils/supabase';
+import axios from 'axios';
 import './App.css';
-
+import { GOOGLE_SHEETS_Submitted_CSV_URL } from './utils/supabase'; // Ensure this path is correct
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login');
   const [userData, setUserData] = useState(null);
@@ -23,11 +24,7 @@ function App() {
     const fetchQuizData = async () => {
       if (userData) {
         try {
-          const { data, error } = await supabase
-            .from('quiz_questions')
-            .select('*');
-          
-          if (error) throw error;
+          const data = await fetchQuestionsFromGoogleSheet();
           setQuizData(data);
         } catch (error) {
           console.error('Error fetching quiz questions:', error);
@@ -54,18 +51,16 @@ function App() {
   // Handle user registration
   const handleRegistration = async (data) => {
     try {
-      // Check for duplicate phone number in the database
-      const { data: existingUser, error } = await supabase
-        .from('quiz_submissions')
-        .select('*')
-        .eq('phone', data.phone)
-        .single();
+      // Fetch data from the Google Sheet CSV
+      const response = await axios.get(GOOGLE_SHEETS_Submitted_CSV_URL);
+      const csvData = response.data;
 
-      if (error && error.code !== 'PGRST116') {
-        throw error; // Handle unexpected errors
-      }
+      // Parse CSV data
+      const rows = csvData.split('\n').map(row => row.split(','));
+      const phoneNumbers = rows.map(row => row[0].trim()); // Assuming phone numbers are in the first column
 
-      if (existingUser) {
+      // Check for duplicate phone number
+      if (phoneNumbers.includes(data.phone)) {
         alert('You have already submitted.');
         return; // Stop further execution
       }

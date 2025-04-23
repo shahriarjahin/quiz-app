@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import './login.css';
-import { checkUserRegistration, GOOGLE_SHEETS_CSV_URL } from '../utils/supabase';
+import { checkUserRegistration, GOOGLE_SHEETS_Users_CSV_URL } from '../utils/supabase';
 function Login({ onLogin }) {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
@@ -9,7 +9,7 @@ function Login({ onLogin }) {
 
   useEffect(() => {
     // Load and parse the CSV file
-    fetch(GOOGLE_SHEETS_CSV_URL)
+    fetch(GOOGLE_SHEETS_Users_CSV_URL)
       .then((response) => response.text())
       .then((text) => {
         Papa.parse(text, {
