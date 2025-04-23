@@ -3,9 +3,9 @@
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
-  }
-  
-  .registration-container h2 {
+}
+
+.registration-container h2 {
     text-align: center;
     margin-bottom: 30px;
     font-weight: 600;
@@ -14,60 +14,64 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-  }
-  
-  .form-group-row {
+}
+
+.form-group-row {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Ensures items are spaced across the row */
     align-items: center;
     margin-bottom: 1rem;
-  }
+}
 
-  .form-group {
+.form-group {
     flex: 1;
     margin-right: 1rem;
-  }
+}
 
-  .form-group:last-child {
+.form-group:last-child {
     margin-right: 0;
-  }
+}
 
-  label {
+.form-group-right {
+    text-align: right; /* Aligns text to the right for status and score */
+}
+
+label {
     font-weight: bold;
     display: block;
     margin-bottom: 0.5rem;
-  }
+}
 
-  p {
+p {
     margin: 0;
     font-size: 1rem;
-  }
-  
-  .form-group {
+}
+
+.form-group {
     margin-bottom: 24px;
-  }
-  
-  .form-group label {
+}
+
+.form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-  }
-  
-  .form-group p {
+}
+
+.form-group p {
     font-size: 18px;
     font-weight: 500;
-  }
-  
-  .start-button {
+}
+
+.start-button {
     width: 100%;
     margin-top: 20px;
     background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
     font-weight: 600;
     font-size: 18px;
     padding: 14px;
-  }
-  
-  .glass-panel::before {
+}
+
+.glass-panel::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -76,4 +80,4 @@
     height: 200%;
     background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
     pointer-events: none;
-  }
+}

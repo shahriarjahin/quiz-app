@@ -93,7 +93,7 @@ function Registration({ onSubmit, email }) {
             <label>Phone Number:</label>
             <p>+880{formData.phone || 'N/A'}</p>
           </div>
-          <div className="form-group">
+          <div className="form-group form-group-right">
             <label>Quiz Status:</label>
             <p>{quizStatus || 'Loading...'}</p>
           </div>
@@ -103,7 +103,7 @@ function Registration({ onSubmit, email }) {
             <label>Full Name:</label>
             <p>{formData.name || 'N/A'}</p>
           </div>
-          <div className="form-group">
+          <div className="form-group form-group-right">
             <label>Score:</label>
             <p>{quizScore || 'N/A'}</p>
           </div>
