@@ -1,7 +1,7 @@
 // components/Registration.js
 import React, { useState, useEffect } from 'react';
 import './Details.css';
-import { checkUserRegistration, GOOGLE_SHEETS_Users_CSV_URL } from '../utils/supabase';
+import { supabase, GOOGLE_SHEETS_Users_CSV_URL } from '../utils/supabase';
 import Papa from 'papaparse';
 
 function Registration({ onSubmit, email }) {
@@ -13,7 +13,8 @@ function Registration({ onSubmit, email }) {
   });
   const [errors, setErrors] = useState({});
   const [csvData, setCsvData] = useState([]);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [quizStatus, setQuizStatus] = useState(null); // To store quiz status
+  const [quizScore, setQuizScore] = useState(null); // To store quiz score
 
   useEffect(() => {
     // Fetch and parse the CSV data from the Google Sheets link
@@ -45,29 +46,37 @@ function Registration({ onSubmit, email }) {
           email: user.email || '',
           university: user.university || 'N/A'
         });
+
+        // Check quiz status and score in Supabase
+        fetchQuizDetails(user.phone);
       }
     }
   }, [csvData, email]);
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+  const fetchQuizDetails = async (phone) => {
+    try {
+      const { data: submission, error } = await supabase
+        .from('quiz_submissions') // Replace with your actual table name
+        .select('status, score') // Replace 'status' and 'score' with your actual column names
+        .eq('phone', phone)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // Ignore "no rows found" error
+        console.error('Error fetching quiz details:', error);
+        setQuizStatus('Error fetching status');
+        setQuizScore('N/A');
+      } else if (submission) {
+        setQuizStatus(submission.status || 'Completed'); // Default to 'Completed' if no status is found
+        setQuizScore(submission.score || 'N/A'); // Default to 'N/A' if no score is found
+      } else {
+        setQuizStatus('Not Started');
+        setQuizScore('N/A');
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      setQuizStatus('Error fetching status');
+      setQuizScore('N/A');
     }
-    
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^\+?[0-9]{10,15}$/.test(formData.phone.trim())) {
-      newErrors.phone = 'Please enter a valid phone number';
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
   const handleConfirm = () => {
@@ -83,8 +92,16 @@ function Registration({ onSubmit, email }) {
       <div className="glass-panel">
         <h2>Confirm Your Details</h2>
         <div className="form-group">
+          <label>Quiz Status:</label>
+          <p>{quizStatus || 'Loading...'}</p>
+        </div>
+        <div className="form-group">
+          <label>Score:</label>
+          <p>{quizScore || 'N/A'}</p>
+        </div>
+        <div className="form-group">
           <label>Phone Number:</label>
-          <p>+880{ formData.phone || 'N/A'}</p>
+          <p>+880{formData.phone || 'N/A'}</p>
         </div>
         <div className="form-group">
           <label>Full Name:</label>
