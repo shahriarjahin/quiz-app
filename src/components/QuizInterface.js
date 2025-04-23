@@ -1,7 +1,6 @@
 // components/QuizInterface.js
 import React, { useState } from 'react';
 import './QuizInterface.css';
-import appendDataToGoogleSheet from '../utils/googleSheet';
 
 function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubmit }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -53,12 +52,6 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
     return questions.every(q => answers[q.id]);
   };
 
-  const handleSubmit = () => {
-    const finalData = Object.entries(answers).map(([questionId, answer]) => [questionId, answer]);
-    appendDataToGoogleSheet(finalData);
-    onSubmit(getTotalAnsweredQuestions());
-  };
-
   return (
     <div className="quiz-container">
       <div className="glass-panel">
@@ -99,7 +92,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, timeElapsed, onSubm
 
           <button 
             className="submit-button" 
-            onClick={handleSubmit}
+            onClick={() => onSubmit(getTotalAnsweredQuestions())}
             disabled={getTotalAnsweredQuestions() === 0}
           >
             Submit Quiz
