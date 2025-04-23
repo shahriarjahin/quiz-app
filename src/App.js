@@ -51,16 +51,20 @@ function App() {
   // Handle user registration
   const handleRegistration = async (data) => {
     try {
-      // Fetch data from the Google Sheet CSV
-      const response = await axios.get(GOOGLE_SHEETS_Submitted_CSV_URL);
-      const csvData = response.data;
+      // Check for duplicate submission in the Supabase database
+      const { data: existingSubmission, error } = await supabase
+        .from('quiz_submissions') // Replace with your actual table name
+        .select('phone')
+        .eq('phone', data.phone)
+        .single(); // Fetch a single matching record
 
-      // Parse CSV data
-      const rows = csvData.split('\n').map(row => row.split(','));
-      const phoneNumbers = rows.map(row => row[0].trim()); // Assuming phone numbers are in the first column
+      if (error && error.code !== 'PGRST116') { // Ignore "no rows found" error
+        console.error('Error checking for duplicate submission:', error);
+        alert('An error occurred while checking your registration. Please try again.');
+        return;
+      }
 
-      // Check for duplicate phone number
-      if (phoneNumbers.includes(data.phone)) {
+      if (existingSubmission) {
         alert('You have already submitted.');
         return; // Stop further execution
       }
@@ -71,6 +75,7 @@ function App() {
       setTimerRunning(true);
     } catch (error) {
       console.error('Error during registration:', error);
+      alert('An unexpected error occurred. Please try again.');
     }
   };
 
