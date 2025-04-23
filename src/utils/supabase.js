@@ -10,7 +10,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const GOOGLE_SHEETS_Users_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKJuHuQ4lepMDejWqYZayufcqsypOTmQmSRxQR1x9mIV4a9IObbq4FM8AWQ1oC5k1vztdfVKOGxTu7/pub?gid=107410889&single=true&output=csv';
 export const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyx28u7TzpXidwXXWDxpoK90PMVUeUjGuzwOT0VHVQOPRH-3lmEF5s3sJMOCFmHd8yS2A/exec';
-export const GOOGLE_SHEETS_Submitted_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKJuHuQ4lepMDejWqYZayufcqsypOTmQmSRxQR1x9mIV4a9IObbq4FM8AWQ1oC5k1vztdfVKOGxTu7/pub?gid=1780360284&single=true&output=csv';
+export const GOOGLE_SHEETS_Submitted_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKJuHuQ4lepMDejWqYZayufcqsypOTmQmSRxQR1x9mIV4a9IObbq4FM8AWQ1oC5k1vztdfVKOGxTu7/pub?gid=60723607&single=true&output=csv';
 export const GOOGLE_SHEETS_Questions_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKJuHuQ4lepMDejWqYZayufcqsypOTmQmSRxQR1x9mIV4a9IObbq4FM8AWQ1oC5k1vztdfVKOGxTu7/pub?gid=1560799684&single=true&output=csv';
 
 export const checkUserRegistration = async (phone) => {

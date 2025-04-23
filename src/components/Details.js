@@ -1,7 +1,7 @@
 // components/Registration.js
 import React, { useState, useEffect } from 'react';
 import './Details.css';
-import { supabase, GOOGLE_SHEETS_Users_CSV_URL } from '../utils/supabase';
+import { supabase, GOOGLE_SHEETS_Users_CSV_URL, GOOGLE_SHEETS_Submitted_CSV_URL } from '../utils/supabase';
 import Papa from 'papaparse';
 
 function Registration({ onSubmit, email }) {
@@ -44,7 +44,7 @@ function Registration({ onSubmit, email }) {
           university: user.university || 'N/A'
         });
 
-        // Check quiz status and score in Supabase
+        // Check quiz status and score in Google Sheets CSV
         fetchQuizDetails(user.phone);
       }
     }
@@ -52,19 +52,38 @@ function Registration({ onSubmit, email }) {
 
   const fetchQuizDetails = async (phone) => {
     try {
-      const { data: submission, error } = await supabase
-        .from('quiz_submissions') // Replace with your actual table name
-        .select('status, score') // Replace 'status' and 'score' with your actual column names
-        .eq('phone', phone)
-        .single();
+      const response = await fetch(GOOGLE_SHEETS_Submitted_CSV_URL);
+      const csvText = await response.text();
 
-      if (error && error.code !== 'PGRST116') { // Ignore "no rows found" error
-        console.error('Error fetching quiz details:', error);
+      // Parse the CSV data
+      const rows = csvText.split('\n').map(row => row.split(','));
+      const headers = rows[0].map(header => header.trim()); // Normalize headers without changing case
+      const phoneIndex = headers.indexOf('Phone');
+      const statusIndex = headers.indexOf('Submitted At'); // Assuming 'Submitted At' indicates completion
+      const scoreIndex = headers.indexOf('Score');
+
+      if (phoneIndex === -1) {
+        console.error('Phone column not found in the CSV file.');
         setQuizStatus('Error fetching status');
         setQuizScore('N/A');
-      } else if (submission) {
-        setQuizStatus(submission.status || 'Completed'); // Default to 'Completed' if no status is found
-        setQuizScore(submission.score || 'N/A'); // Default to 'N/A' if no score is found
+        return;
+      }
+
+      // Find the row with the matching phone number
+      const userRow = rows.find((row, index) => index !== 0 && row[phoneIndex] === phone);
+
+      if (userRow) {
+        setQuizStatus(userRow[statusIndex] ? 'Completed' : 'Not Started'); // Check if 'Submitted At' has a value
+
+        if (scoreIndex === -1) {
+          console.warn('Score column not found in the CSV file.');
+          setQuizScore('N/A');
+        } else if (!userRow[scoreIndex]) {
+          console.warn('Score value is empty for the user.');
+          setQuizScore('N/A');
+        } else {
+          setQuizScore(userRow[scoreIndex]);
+        }
       } else {
         setQuizStatus('Not Started');
         setQuizScore('N/A');
@@ -93,7 +112,7 @@ function Registration({ onSubmit, email }) {
             <label>Phone Number:</label>
             <p>+880{formData.phone || 'N/A'}</p>
           </div>
-          <div className="form-group form-group-right">
+          <div className="form-group">
             <label>Quiz Status:</label>
             <p>{quizStatus || 'Loading...'}</p>
           </div>
@@ -103,7 +122,7 @@ function Registration({ onSubmit, email }) {
             <label>Full Name:</label>
             <p>{formData.name || 'N/A'}</p>
           </div>
-          <div className="form-group form-group-right">
+          <div className="form-group">
             <label>Score:</label>
             <p>{quizScore || 'N/A'}</p>
           </div>

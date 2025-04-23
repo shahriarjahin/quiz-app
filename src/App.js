@@ -5,7 +5,7 @@ import Details from './components/Details';
 import QuizInterface from './components/QuizInterface';
 import ThankYou from './components/ThankYou';
 import Login from './components/login';
-import { supabase, fetchQuestionsFromGoogleSheet } from './utils/supabase';
+import { supabase, fetchQuestionsFromGoogleSheet, GOOGLE_SHEETS_Submitted_CSV_URL, GOOGLE_SHEETS_WEB_APP_URL } from './utils/supabase';
 import './App.css';
 
 function App() {
@@ -56,19 +56,23 @@ function App() {
   // Handle user registration
   const handleRegistration = async (data) => {
     try {
-      const { data: existingSubmission, error } = await supabase
-        .from('quiz_submissions')
-        .select('phone')
-        .eq('phone', data.phone)
-        .single();
+      const response = await fetch(GOOGLE_SHEETS_Submitted_CSV_URL);
+      const csvText = await response.text();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error checking for duplicate submission:', error);
-        alert('An error occurred while checking your registration. Please try again.');
+      // Parse the CSV data
+      const rows = csvText.split('\n').map(row => row.split(','));
+      const headers = rows[0].map(header => header.trim().toLowerCase()); // Normalize headers
+      const phoneIndex = headers.indexOf('phone'); // Match 'phone' column case-insensitively
+
+      if (phoneIndex === -1) {
+        alert('Phone column not found in the CSV file.');
         return;
       }
 
-      if (existingSubmission) {
+      // Check for duplicate phone number
+      const isDuplicate = rows.some((row, index) => index !== 0 && row[phoneIndex] === data.phone);
+
+      if (isDuplicate) {
         alert('You have already submitted.');
         return;
       }
@@ -99,37 +103,41 @@ function App() {
   // Handle quiz submission
   const handleSubmit = async () => {
     setTimerRunning(false);
-
+  
     try {
       const correctAnswers = quizData.filter(q => q.correct_answer === answers[q.id]).length;
+      const timeTaken = 30 * 60 - remainingTime;
+  
+      const formData = new URLSearchParams();
+      formData.append("name", userData.name);
+      formData.append("phone", userData.phone);
+formData.append("university", userData.university);
+formData.append("answers", JSON.stringify(answers));
+formData.append("timeTaken", timeTaken);
+formData.append("score", correctAnswers);
+formData.append("totalQuestions", quizData.length);
 
-      const { data, error } = await supabase
-        .from('quiz_submissions')
-        .insert([
-          {
-            phone: userData.phone,
-            name: userData.name,
-            university: userData.university,
-            answers: answers,
-            time_taken: 30 * 60 - remainingTime, // Calculate time taken
-            score: correctAnswers,
-            total_questions: quizData.length
-          }
-        ]);
-
-      if (error) throw error;
-
+await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+  method: "POST",
+  body: formData
+});
+  
+      
+  
+      
+  
       setQuizResult({
         answers: answers,
         total: quizData.length,
-        timeTaken: 30 * 60 - remainingTime
+        timeTaken: timeTaken
       });
-
+  
       setCurrentScreen('thankYou');
     } catch (error) {
       console.error('Error submitting quiz:', error);
     }
   };
+  
 
   // Render current screen
   const renderScreen = () => {
