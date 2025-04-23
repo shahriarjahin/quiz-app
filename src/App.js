@@ -14,8 +14,28 @@ function App() {
   const [quizData, setQuizData] = useState([]);
   const [answers, setAnswers] = useState({});
   const [timerRunning, setTimerRunning] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(30 * 60); // 30 minutes in seconds
   const [quizResult, setQuizResult] = useState(null);
   const [email, setEmail] = useState('');
+
+  // Timer logic
+  useEffect(() => {
+    if (timerRunning) {
+      const startTime = Date.now();
+      const intervalId = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const timeLeft = 30 * 60 - elapsed; // Calculate remaining time
+        setRemainingTime(timeLeft);
+
+        if (timeLeft <= 0) {
+          clearInterval(intervalId); // Stop the timer
+          handleSubmit(); // Automatically submit the quiz
+        }
+      }, 1000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [timerRunning]);
 
   // Fetch quiz questions when user data is provided
   useEffect(() => {
@@ -36,7 +56,6 @@ function App() {
   // Handle user registration
   const handleRegistration = async (data) => {
     try {
-      // Check for duplicate submission in the Supabase database
       const { data: existingSubmission, error } = await supabase
         .from('quiz_submissions')
         .select('phone')
@@ -54,7 +73,6 @@ function App() {
         return;
       }
 
-      // If no duplicate, proceed with registration
       setUserData(data);
       setCurrentScreen('quiz');
       setTimerRunning(true);
@@ -93,7 +111,7 @@ function App() {
             name: userData.name,
             university: userData.university,
             answers: answers,
-            time_taken: 0, // Remove dependency on timeElapsed
+            time_taken: 30 * 60 - remainingTime, // Calculate time taken
             score: correctAnswers,
             total_questions: quizData.length
           }
@@ -104,7 +122,7 @@ function App() {
       setQuizResult({
         answers: answers,
         total: quizData.length,
-        timeTaken: 0 // Remove dependency on timeElapsed
+        timeTaken: 30 * 60 - remainingTime
       });
 
       setCurrentScreen('thankYou');
@@ -126,6 +144,7 @@ function App() {
             questions={quizData}
             onAnswerSelect={handleAnswerSelect}
             answers={answers}
+            remainingTime={remainingTime} // Pass remaining time as a prop
             onSubmit={handleSubmit}
           />
         );
