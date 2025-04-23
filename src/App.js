@@ -6,15 +6,13 @@ import QuizInterface from './components/QuizInterface';
 import ThankYou from './components/ThankYou';
 import Login from './components/login';
 import { supabase, fetchQuestionsFromGoogleSheet } from './utils/supabase';
-import axios from 'axios';
 import './App.css';
-import { GOOGLE_SHEETS_Submitted_CSV_URL } from './utils/supabase'; // Ensure this path is correct
+
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login');
   const [userData, setUserData] = useState(null);
   const [quizData, setQuizData] = useState([]);
   const [answers, setAnswers] = useState({});
-  const [timeElapsed, setTimeElapsed] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [quizResult, setQuizResult] = useState(null);
   const [email, setEmail] = useState('');
@@ -35,30 +33,17 @@ function App() {
     fetchQuizData();
   }, [userData]);
 
-  // Start timer when quiz begins
-  useEffect(() => {
-    let intervalId;
-    
-    if (timerRunning) {
-      intervalId = setInterval(() => {
-        setTimeElapsed((prev) => prev + 1);
-      }, 1000);
-    }
-
-    return () => clearInterval(intervalId);
-  }, [timerRunning]);
-
   // Handle user registration
   const handleRegistration = async (data) => {
     try {
       // Check for duplicate submission in the Supabase database
       const { data: existingSubmission, error } = await supabase
-        .from('quiz_submissions') // Replace with your actual table name
+        .from('quiz_submissions')
         .select('phone')
         .eq('phone', data.phone)
-        .single(); // Fetch a single matching record
+        .single();
 
-      if (error && error.code !== 'PGRST116') { // Ignore "no rows found" error
+      if (error && error.code !== 'PGRST116') {
         console.error('Error checking for duplicate submission:', error);
         alert('An error occurred while checking your registration. Please try again.');
         return;
@@ -66,7 +51,7 @@ function App() {
 
       if (existingSubmission) {
         alert('You have already submitted.');
-        return; // Stop further execution
+        return;
       }
 
       // If no duplicate, proceed with registration
@@ -96,12 +81,10 @@ function App() {
   // Handle quiz submission
   const handleSubmit = async () => {
     setTimerRunning(false);
-    
+
     try {
-      // Calculate results (optional)
       const correctAnswers = quizData.filter(q => q.correct_answer === answers[q.id]).length;
-      
-      // Store submission in Supabase
+
       const { data, error } = await supabase
         .from('quiz_submissions')
         .insert([
@@ -110,20 +93,20 @@ function App() {
             name: userData.name,
             university: userData.university,
             answers: answers,
-            time_taken: timeElapsed,
+            time_taken: 0, // Remove dependency on timeElapsed
             score: correctAnswers,
             total_questions: quizData.length
           }
         ]);
-      
+
       if (error) throw error;
 
       setQuizResult({
         answers: answers,
         total: quizData.length,
-        timeTaken: timeElapsed
+        timeTaken: 0 // Remove dependency on timeElapsed
       });
-      
+
       setCurrentScreen('thankYou');
     } catch (error) {
       console.error('Error submitting quiz:', error);
@@ -139,11 +122,10 @@ function App() {
         return <Details onSubmit={handleRegistration} email={email} />;
       case 'quiz':
         return (
-          <QuizInterface 
-            questions={quizData} 
-            onAnswerSelect={handleAnswerSelect} 
+          <QuizInterface
+            questions={quizData}
+            onAnswerSelect={handleAnswerSelect}
             answers={answers}
-            timeElapsed={timeElapsed}
             onSubmit={handleSubmit}
           />
         );
