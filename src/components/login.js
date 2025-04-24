@@ -54,7 +54,7 @@ function Login({ onLogin }) {
       <div className="glass-panel">
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
-          <div className="form-group">
+          <div className="form-groupl">
             <label htmlFor="email">Email</label>
             <input
               type="email"

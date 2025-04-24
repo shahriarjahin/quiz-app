@@ -29,9 +29,15 @@ h2 {
   margin-bottom: 8px;
   font-weight: 500;
   align-items: center;
+  justify-content: center;
+}
+.form-groupl label {
+  display: flex;
+  margin-bottom: 8px;
+  font-weight: 500;
+  align-items: center;
   justify-content: flex-start;
 }
-
 label {
   display: block;
   font-size: 20px;
