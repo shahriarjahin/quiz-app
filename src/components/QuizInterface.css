@@ -96,6 +96,12 @@
     align-items: center; /* Align buttons vertically */
     margin-top: 20px; /* Add spacing above the controls */
   }
+  .submit-button-container {
+    display: flex;
+    justify-content: center; /* Distribute buttons evenly */
+    align-items: center; /* Align buttons vertically */
+    margin-top: 20px; /* Add spacing above the controls */
+  }
   
   .nav-button,
   .submit-button {

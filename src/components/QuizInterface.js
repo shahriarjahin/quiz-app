@@ -101,7 +101,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, remainingTime, onSu
   ))}
 </div>
 
-<div className="navigation-controls">
+<div className="submit-button-container">
   <button
     className="submit-quiz-middle"
     onClick={onSubmit}
