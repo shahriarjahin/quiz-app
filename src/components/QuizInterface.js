@@ -103,7 +103,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, remainingTime, onSu
 
 <div className="navigation-controls">
   <button
-    className="submit-button"
+    className="submit-quiz-middle"
     onClick={onSubmit}
     disabled={Object.keys(answers).length === 0}
   >
