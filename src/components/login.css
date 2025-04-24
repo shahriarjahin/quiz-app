@@ -24,9 +24,12 @@ h2 {
   color: #333;
 }
 
-.form-group {
-  margin-bottom: 15px;
-  text-align: left;
+.form-group label {
+  display: flex;
+  margin-bottom: 8px;
+  font-weight: 500;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 label {

@@ -14,7 +14,7 @@ function App() {
   const [quizData, setQuizData] = useState([]);
   const [answers, setAnswers] = useState({});
   const [timerRunning, setTimerRunning] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(30 * 60); // 30 minutes in seconds
+  const [remainingTime, setRemainingTime] = useState(15 * 60); // 15 minutes in seconds
   const [quizResult, setQuizResult] = useState(null);
   const [email, setEmail] = useState('');
 
@@ -24,7 +24,7 @@ function App() {
       const startTime = Date.now();
       const intervalId = setInterval(() => {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        const timeLeft = 30 * 60 - elapsed; // Calculate remaining time
+        const timeLeft = 15 * 60 - elapsed; // Calculate remaining time
         setRemainingTime(timeLeft);
 
         if (timeLeft <= 0) {
@@ -106,30 +106,27 @@ function App() {
   
     try {
       const correctAnswers = quizData.filter(q => q.correct_answer === answers[q.id]).length;
-      const timeTaken = 30 * 60 - remainingTime;
+      const timeTaken = 15 * 60 - remainingTime;
   
       const formData = new URLSearchParams();
       formData.append("name", userData.name);
       formData.append("phone", userData.phone);
-formData.append("university", userData.university);
-formData.append("answers", JSON.stringify(answers));
-formData.append("timeTaken", timeTaken);
-formData.append("score", correctAnswers);
-formData.append("totalQuestions", quizData.length);
+      formData.append("university", userData.university);
+      formData.append("answers", JSON.stringify(answers));
+      formData.append("timeTaken", timeTaken);
+      formData.append("score", correctAnswers);
+      formData.append("totalQuestions", quizData.length);
 
-await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
-  method: "POST",
-  body: formData
-});
-  
-      
-  
-      
+      await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+        method: "POST",
+        body: formData
+      });
   
       setQuizResult({
         answers: answers,
         total: quizData.length,
-        timeTaken: timeTaken
+        timeTaken: timeTaken,
+        score: correctAnswers // Include the score in the result
       });
   
       setCurrentScreen('thankYou');
@@ -137,7 +134,6 @@ await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
       console.error('Error submitting quiz:', error);
     }
   };
-  
 
   // Render current screen
   const renderScreen = () => {

@@ -1,9 +1,64 @@
 // components/QuizInterface.js
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './QuizInterface.css';
 
 function QuizInterface({ questions, onAnswerSelect, answers, remainingTime, onSubmit }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isCheating, setIsCheating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for loading
+
+  const handleSubmit = useCallback(() => {
+    setIsSubmitting(true); // Show loading screen
+    onSubmit();
+  }, [onSubmit]);
+
+  useEffect(() => {
+    // Block user actions
+    const blockActions = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
+    const blockKeyboardShortcuts = (e) => {
+      const forbiddenKeys = ['c', 'u', 'a', 's']; // Ctrl+C, Ctrl+U, Ctrl+A, Ctrl+S
+      if (e.ctrlKey && forbiddenKeys.includes(e.key.toLowerCase())) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    const detectTabSwitch = () => {
+      setIsCheating(true);
+    };
+
+    // Add event listeners
+    document.addEventListener('contextmenu', blockActions);
+    document.addEventListener('copy', blockActions);
+    document.addEventListener('cut', blockActions);
+    document.addEventListener('paste', blockActions);
+    document.addEventListener('keydown', blockKeyboardShortcuts);
+    document.addEventListener('selectstart', blockActions);
+    window.addEventListener('blur', detectTabSwitch);
+
+    // Cleanup event listeners on unmount
+    return () => {
+      document.removeEventListener('contextmenu', blockActions);
+      document.removeEventListener('copy', blockActions);
+      document.removeEventListener('cut', blockActions);
+      document.removeEventListener('paste', blockActions);
+      document.removeEventListener('keydown', blockKeyboardShortcuts);
+      document.removeEventListener('selectstart', blockActions);
+      window.removeEventListener('blur', detectTabSwitch);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isCheating) {
+      alert('Cheating detected! Submitting the quiz.');
+      handleSubmit();
+    }
+  }, [isCheating, handleSubmit]);
 
   // Format time (seconds to MM:SS)
   const formatTime = (timeInSeconds) => {
@@ -19,6 +74,14 @@ function QuizInterface({ questions, onAnswerSelect, answers, remainingTime, onSu
         <div className="glass-panel">
           <div className="loading">Loading questions...</div>
         </div>
+      </div>
+    );
+  }
+
+  if (isSubmitting) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-message">Submitting your quiz, please wait...</div>
       </div>
     );
   }
@@ -81,35 +144,33 @@ function QuizInterface({ questions, onAnswerSelect, answers, remainingTime, onSu
             Previous
           </button>
 
-          
-
           {currentQuestionIndex < questions.length - 1 && (
             <button className="nav-button" onClick={goToNextQuestion}>
               Next
             </button>
           )}
         </div>
-          <div className="question-navigation">
-  {questions.map((q, index) => (
-    <div 
-      key={index}
-      className={`question-dot ${index === currentQuestionIndex ? 'active' : ''} ${answers[q.id] ? 'answered' : ''}`}
-      onClick={() => setCurrentQuestionIndex(index)}
-    >
-      {index + 1}
-    </div>
-  ))}
-</div>
+        <div className="question-navigation">
+          {questions.map((q, index) => (
+            <div 
+              key={index}
+              className={`question-dot ${index === currentQuestionIndex ? 'active' : ''} ${answers[q.id] ? 'answered' : ''}`}
+              onClick={() => setCurrentQuestionIndex(index)}
+            >
+              {index + 1}
+            </div>
+          ))}
+        </div>
 
-<div className="submit-button-container">
-  <button
-    className="submit-quiz-middle"
-    onClick={onSubmit}
-    disabled={Object.keys(answers).length === 0}
-  >
-    Submit Quiz
-  </button>
-</div>
+        <div className="submit-button-container">
+          <button
+            className="submit-quiz-middle"
+            onClick={handleSubmit}
+            disabled={Object.keys(answers).length === 0 || isSubmitting}
+          >
+            Submit Quiz
+          </button>
+        </div>
       </div>
     </div>
   );
