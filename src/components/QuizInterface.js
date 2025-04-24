@@ -81,13 +81,7 @@ function QuizInterface({ questions, onAnswerSelect, answers, remainingTime, onSu
             Previous
           </button>
 
-          <button
-            className="submit-button"
-            onClick={onSubmit}
-            disabled={Object.keys(answers).length === 0}
-          >
-            Submit Quiz
-          </button>
+          
 
           {currentQuestionIndex < questions.length - 1 && (
             <button className="nav-button" onClick={goToNextQuestion}>
@@ -95,6 +89,27 @@ function QuizInterface({ questions, onAnswerSelect, answers, remainingTime, onSu
             </button>
           )}
         </div>
+          <div className="question-navigation">
+  {questions.map((q, index) => (
+    <div 
+      key={index}
+      className={`question-dot ${index === currentQuestionIndex ? 'active' : ''} ${answers[q.id] ? 'answered' : ''}`}
+      onClick={() => setCurrentQuestionIndex(index)}
+    >
+      {index + 1}
+    </div>
+  ))}
+</div>
+
+<div className="navigation-controls">
+  <button
+    className="submit-button"
+    onClick={onSubmit}
+    disabled={Object.keys(answers).length === 0}
+  >
+    Submit Quiz
+  </button>
+</div>
       </div>
     </div>
   );
