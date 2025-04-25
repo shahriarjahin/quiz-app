@@ -7,7 +7,7 @@ import ThankYou from './components/ThankYou';
 import Login from './components/login';
 import { supabase, fetchQuestionsFromGoogleSheet, GOOGLE_SHEETS_Submitted_CSV_URL, GOOGLE_SHEETS_WEB_APP_URL } from './utils/supabase';
 import './App.css';
-const totaltime = 10; // Total time in minutes
+const totaltime = 15; // Total time in minutes
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login');
   const [userData, setUserData] = useState(null);
