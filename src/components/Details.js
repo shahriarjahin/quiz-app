@@ -97,8 +97,9 @@ function Registration({ onSubmit, email }) {
 
   const handleConfirm = () => {
     if (formData.name && formData.phone && formData.email) {
-      onSubmit(formData);
       alert('You cannot change tab or switch browser, take screenshots otherwise you will be disqualified.');
+      onSubmit(formData);
+      
     } else {
       alert('Please ensure all fields are filled correctly.');
     }
