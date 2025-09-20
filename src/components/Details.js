@@ -13,11 +13,11 @@ function Registration({ onSubmit, email }) {
   });
   const [errors, setErrors] = useState({});
   const [csvData, setCsvData] = useState([]);
-  const [quizStatus, setQuizStatus] = useState(null); // To store quiz status
-  const [quizScore, setQuizScore] = useState(null); // To store quiz score
+  const [quizStatus, setQuizStatus] = useState(null);
+  const [quizScore, setQuizScore] = useState(null);
+  const [manualPhone, setManualPhone] = useState(''); // New state for manual phone input
 
   useEffect(() => {
-    // Fetch and parse the CSV data from the Google Sheets link
     fetch(GOOGLE_SHEETS_Users_CSV_URL)
       .then((response) => response.text())
       .then((text) => {
@@ -43,53 +43,49 @@ function Registration({ onSubmit, email }) {
           email: user.email || '',
           university: user.university || 'N/A'
         });
-
-        // Check quiz status and score in Google Sheets CSV
-        fetchQuizDetails(user.phone);
+        if (user.phone) {
+          fetchQuizDetails(user.phone); // Only fetch if phone exists
+        }
       }
     }
   }, [csvData, email]);
+
+  // When manual phone is entered, update formData and refetch quiz details
+  useEffect(() => {
+    if (manualPhone.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        phone: manualPhone
+      }));
+      fetchQuizDetails(manualPhone);
+    }
+    // eslint-disable-next-line
+  }, [manualPhone]);
 
   const fetchQuizDetails = async (phone) => {
     try {
       const response = await fetch(GOOGLE_SHEETS_Submitted_CSV_URL);
       const csvText = await response.text();
-
-      // Parse the CSV data
       const rows = csvText.split('\n').map(row => row.split(','));
-      const headers = rows[0].map(header => header.trim()); // Normalize headers without changing case
+      const headers = rows[0].map(header => header.trim());
       const phoneIndex = headers.indexOf('Phone');
-      const statusIndex = headers.indexOf('Submitted At'); // Assuming 'Submitted At' indicates completion
+      const statusIndex = headers.indexOf('Submitted At');
       const scoreIndex = headers.indexOf('Score');
-
       if (phoneIndex === -1) {
-        console.error('Phone column not found in the CSV file.');
         setQuizStatus('Error fetching status');
         setQuizScore('N/A');
         return;
       }
-
-      // Find the row with the matching phone number
       const userRow = rows.find((row, index) => index !== 0 && row[phoneIndex] === phone);
-
       if (userRow) {
-        setQuizStatus(userRow[statusIndex] ? 'Completed' : 'Not Started'); // Check if 'Submitted At' has a value
-
-        if (scoreIndex === -1) {
-          console.warn('Score column not found in the CSV file.');
-          setQuizScore('N/A');
-        } else if (!userRow[scoreIndex]) {
-          console.warn('Score value is empty for the user.');
-          setQuizScore('N/A');
-        } else {
-          setQuizScore(userRow[scoreIndex]);
-        }
+        setQuizStatus(userRow[statusIndex] ? 'Completed' : 'Not Started');
+        if (scoreIndex === -1) setQuizScore('N/A');
+        else setQuizScore(userRow[scoreIndex] || 'N/A');
       } else {
         setQuizStatus('Not Started');
         setQuizScore('N/A');
       }
     } catch (err) {
-      console.error('Unexpected error:', err);
       setQuizStatus('Error fetching status');
       setQuizScore('N/A');
     }
@@ -99,7 +95,6 @@ function Registration({ onSubmit, email }) {
     if (formData.name && formData.phone && formData.email) {
       alert('You cannot change tab or switch browser, take screenshots otherwise you will be disqualified.');
       onSubmit(formData);
-      
     } else {
       alert('Please ensure all fields are filled correctly.');
     }
@@ -109,16 +104,26 @@ function Registration({ onSubmit, email }) {
     <div className="registration-container">
       <div className="glass-panel">
         <h2>Confirm Your Details</h2>
-        
-          <div className="form-group">
-            <label>Phone Number:</label>
-            <p>{formData.phone || 'NOT FOUND'}</p>
-          </div>
-          <div className="form-group">
-            <label>Full Name:</label>
-            <p>{formData.name || 'N/A'}</p>
-          </div>
-        
+        <div className="form-group">
+          <label>Phone Number:</label>
+          {formData.phone ? (
+            <p>{formData.phone}</p>
+          ) : (
+            <>
+              <input
+                type="text"
+                placeholder="Enter your phone number"
+                value={manualPhone}
+                onChange={(e) => setManualPhone(e.target.value)}
+              />
+              {!manualPhone && <p style={{ color: 'red' }}>NOT FOUND</p>}
+            </>
+          )}
+        </div>
+        <div className="form-group">
+          <label>Full Name:</label>
+          <p>{formData.name || 'N/A'}</p>
+        </div>
         <div className="form-group">
           <label>Email:</label>
           <p>{formData.email || 'N/A'}</p>
@@ -128,9 +133,9 @@ function Registration({ onSubmit, email }) {
           <p>{formData.university || 'N/A'}</p>
         </div>
         <div className="form-group">
-            <label>Quiz Status:</label>
-            <p>{quizStatus || 'Loading...'}</p>
-          </div>
+          <label>Quiz Status:</label>
+          <p>{quizStatus || 'Loading...'}</p>
+        </div>
         <button onClick={handleConfirm} className="start-button">Confirm and Start Quiz</button>
       </div>
     </div>
