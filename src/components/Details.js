@@ -15,7 +15,8 @@ function Registration({ onSubmit, email }) {
   const [csvData, setCsvData] = useState([]);
   const [quizStatus, setQuizStatus] = useState(null);
   const [quizScore, setQuizScore] = useState(null);
-  const [manualPhone, setManualPhone] = useState(''); // New state for manual phone input
+  const [manualPhone, setManualPhone] = useState('');
+  const [phoneConfirmed, setPhoneConfirmed] = useState(false);
 
   useEffect(() => {
     fetch(GOOGLE_SHEETS_Users_CSV_URL)
@@ -44,23 +45,23 @@ function Registration({ onSubmit, email }) {
           university: user.university || 'N/A'
         });
         if (user.phone) {
+          setPhoneConfirmed(true);
           fetchQuizDetails(user.phone); // Only fetch if phone exists
+        } else {
+          setPhoneConfirmed(false);
         }
       }
     }
   }, [csvData, email]);
 
-  // When manual phone is entered, update formData and refetch quiz details
-  useEffect(() => {
-    if (manualPhone.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        phone: manualPhone
-      }));
-      fetchQuizDetails(manualPhone);
-    }
-    // eslint-disable-next-line
-  }, [manualPhone]);
+  const handlePhoneConfirm = () => {
+    setFormData((prev) => ({
+      ...prev,
+      phone: manualPhone
+    }));
+    fetchQuizDetails(manualPhone);
+    setPhoneConfirmed(true);
+  };
 
   const fetchQuizDetails = async (phone) => {
     try {
@@ -106,18 +107,41 @@ function Registration({ onSubmit, email }) {
         <h2>Confirm Your Details</h2>
         <div className="form-group">
           <label>Phone Number:</label>
-          {formData.phone ? (
+          {formData.phone && phoneConfirmed ? (
             <p>{formData.phone}</p>
           ) : (
-            <>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <input
                 type="text"
                 placeholder="Enter your phone number"
                 value={manualPhone}
-                onChange={(e) => setManualPhone(e.target.value)}
+                maxLength={11}
+                onChange={(e) => {
+                  // Only allow numbers
+                  const val = e.target.value.replace(/\D/g, '');
+                  setManualPhone(val);
+                  setPhoneConfirmed(false); // Reset confirmation if editing
+                }}
+                style={{ marginRight: "8px" }}
               />
-              {!manualPhone && <p style={{ color: 'red' }}>NOT FOUND</p>}
-            </>
+              {manualPhone.length === 11 && !phoneConfirmed && (
+                <button
+                  type="button"
+                  onClick={handlePhoneConfirm}
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc",
+                    background: "#47b881",
+                    color: "#fff",
+                    cursor: "pointer"
+                  }}
+                >
+                  OK
+                </button>
+              )}
+              {!manualPhone && <p style={{ color: 'red', marginLeft: 8 }}>NOT FOUND</p>}
+            </div>
           )}
         </div>
         <div className="form-group">
