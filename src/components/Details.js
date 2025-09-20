@@ -124,7 +124,7 @@ function Registration({ onSubmit, email }) {
                 }}
                 style={{ marginRight: "8px" }}
               />
-              {manualPhone.length === 11 && !phoneConfirmed && (
+              {manualPhone.length === 10 && !phoneConfirmed && (
                 <button
                   type="button"
                   onClick={handlePhoneConfirm}
