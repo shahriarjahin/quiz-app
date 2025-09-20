@@ -113,9 +113,9 @@ function Registration({ onSubmit, email }) {
             <div style={{ display: "flex", alignItems: "center" }}>
               <input
                 type="text"
-                placeholder="Enter your phone number"
+                placeholder="Enter your phone number without 0 "
                 value={manualPhone}
-                maxLength={11}
+                maxLength={10}
                 onChange={(e) => {
                   // Only allow numbers
                   const val = e.target.value.replace(/\D/g, '');
