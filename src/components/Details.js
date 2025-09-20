@@ -112,7 +112,7 @@ function Registration({ onSubmit, email }) {
         
           <div className="form-group">
             <label>Phone Number:</label>
-            <p>+880{formData.phone || 'N/A'}</p>
+            <p>{formData.phone || 'NOT FOUND'}</p>
           </div>
           <div className="form-group">
             <label>Full Name:</label>
